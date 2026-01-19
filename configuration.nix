@@ -176,6 +176,7 @@
       cat = "bat";
       grep = "rg";
       find = "fd";
+      rebuild = "sudo nixos-rebuild switch --flake ~/NixOS";
     };
   };
 
