@@ -24,7 +24,7 @@ in
     security.polkit.enable = true;
 
     # Polkit rules for passwordless automount (wheel group)
-    security.polkit.extraConfig = lib.optionalAttrs cfg.automountWithoutPassword ''
+    security.polkit.extraConfig = lib.optionalString cfg.automountWithoutPassword ''
       polkit.addRule(function(action, subject) {
         if (action.id.startsWith("org.freedesktop.udisks2.") &&
             subject.isInGroup("wheel")) {
