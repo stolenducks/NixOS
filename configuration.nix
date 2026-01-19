@@ -38,10 +38,15 @@
     loader.efi.canTouchEfiVariables = true;
     loader.timeout = 0;  # Hidden, but Space key shows menu
 
-    # Plymouth - Catppuccin theme with NixOS logo
+    # Plymouth - simple loading bar at bottom
     plymouth = {
       enable = true;
-      # Catppuccin theme is applied via catppuccin.plymouth below
+      theme = "loader";
+      themePackages = with pkgs; [
+        (adi1090x-plymouth-themes.override {
+          selected_themes = [ "loader" ];
+        })
+      ];
     };
 
     # Hide ALL boot/shutdown text
@@ -58,12 +63,6 @@
       "systemd.show_status=false"   # Hide systemd status completely
       "rd.systemd.show_status=false"
     ];
-  };
-
-  # Catppuccin Plymouth theme (NixOS logo with loading bar)
-  catppuccin.plymouth = {
-    enable = true;
-    flavor = "mocha";
   };
 
   # ─────────────────────────────────────────────────────────────────

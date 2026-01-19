@@ -84,6 +84,11 @@
   xdg.configFile."hypr/hyprlock.conf".text = ''
     # Clean, minimal lock screen
 
+    general {
+      immediate_render = true  # Render immediately, no delay
+      grace = 0                # No grace period
+    }
+
     background {
       monitor =
       color = rgb(30, 30, 46)  # Solid dark background (Catppuccin base)
