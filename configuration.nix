@@ -29,14 +29,19 @@
   # ─────────────────────────────────────────────────────────────────
 
   boot = {
-    loader.systemd-boot.enable = true;
+    loader.systemd-boot = {
+      enable = true;
+      # Press Space to show boot menu (hidden by default)
+      # This lets you select previous NixOS generations
+      editor = false;  # Disable kernel cmdline editing for security
+    };
     loader.efi.canTouchEfiVariables = true;
-    loader.timeout = 0;
+    loader.timeout = 0;  # Hidden, but Space key shows menu
 
-    # Plymouth - clean boot/shutdown splash
+    # Plymouth - Catppuccin theme with NixOS logo
     plymouth = {
       enable = true;
-      theme = "spinner";  # Simple spinner, no extra logos
+      # Catppuccin theme is applied via catppuccin.plymouth below
     };
 
     # Hide ALL boot/shutdown text
@@ -53,6 +58,12 @@
       "systemd.show_status=false"   # Hide systemd status completely
       "rd.systemd.show_status=false"
     ];
+  };
+
+  # Catppuccin Plymouth theme (NixOS logo with loading bar)
+  catppuccin.plymouth = {
+    enable = true;
+    flavor = "mocha";
   };
 
   # ─────────────────────────────────────────────────────────────────

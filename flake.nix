@@ -18,13 +18,20 @@
       url = "github:numtide/llm-agents.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    catppuccin = {
+      url = "github:catppuccin/nix";
+    };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, noctalia, llm-agents, ... }: {
+  outputs = inputs@{ self, nixpkgs, home-manager, noctalia, llm-agents, catppuccin, ... }: {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
+        # Catppuccin theming (Plymouth, etc.)
+        catppuccin.nixosModules.catppuccin
+
         # Main configuration (imports hardware-configuration.nix and custom modules)
         ./configuration.nix
 
