@@ -9,7 +9,8 @@
 
 {
   imports = [
-    # Custom modules (Tony Banters style - modular, shareable)
+    # Custom modules
+    ./hardware-configuration.nix (Tony Banters style - modular, shareable)
     ./modules/file-manager.nix
     ./modules/system-tools.nix
     ./modules/device-services.nix
