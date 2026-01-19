@@ -78,53 +78,39 @@
   };
 
   # ─────────────────────────────────────────────────────────────────
-  # HYPRLOCK (Lock Screen)
+  # HYPRLOCK (Lock Screen) - Ultra minimal for fast load
   # ─────────────────────────────────────────────────────────────────
 
   xdg.configFile."hypr/hyprlock.conf".text = ''
-    # Clean, minimal lock screen
-
     general {
-      immediate_render = true  # Render immediately, no delay
-      grace = 0                # No grace period
+      disable_loading_bar = true
+      immediate_render = true
+      no_fade_in = true
+      no_fade_out = true
+      grace = 0
     }
 
     background {
       monitor =
-      color = rgb(30, 30, 46)  # Solid dark background (Catppuccin base)
+      color = rgb(30, 30, 46)
     }
 
     input-field {
       monitor =
-      size = 250, 50
-      outline_thickness = 2
-      dots_size = 0.2
-      dots_spacing = 0.2
+      size = 300, 50
+      outline_thickness = 0
+      dots_size = 0.25
+      dots_spacing = 0.15
       dots_center = true
-      outer_color = rgb(137, 180, 250)  # Catppuccin blue
-      inner_color = rgb(49, 50, 68)     # Catppuccin surface0
-      font_color = rgb(205, 214, 244)   # Catppuccin text
-      fade_on_empty = false             # ALWAYS show input field
+      outer_color = rgb(30, 30, 46)
+      inner_color = rgb(69, 71, 90)
+      font_color = rgb(205, 214, 244)
+      fade_on_empty = false
       fade_timeout = 0
       placeholder_text =
       hide_input = false
-      rounding = 10
-      check_color = rgb(166, 227, 161)  # Catppuccin green
-      fail_color = rgb(243, 139, 168)   # Catppuccin red
-      fail_text = <i>$FAIL</i>
-      fail_timeout = 2000
-      position = 0, -20
-      halign = center
-      valign = center
-    }
-
-    label {
-      monitor =
-      text = $TIME
-      color = rgba(205, 214, 244, 1.0)
-      font_size = 64
-      font_family = JetBrainsMono Nerd Font
-      position = 0, 100
+      rounding = 8
+      position = 0, 0
       halign = center
       valign = center
     }

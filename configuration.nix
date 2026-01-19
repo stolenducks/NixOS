@@ -62,6 +62,8 @@
       "vt.global_cursor_default=0"  # Hide cursor
       "systemd.show_status=false"   # Hide systemd status completely
       "rd.systemd.show_status=false"
+      "fbcon=nodefer"               # Prevent early framebuffer console
+      "vt.handoff=7"                # Hand off to Plymouth on VT7
     ];
   };
 
@@ -122,16 +124,8 @@
   programs.niri.enable = true;
   programs.xwayland.enable = true;
 
-  # Fix "import-environment without a list" warning
-  # Properly import environment variables into systemd user session
-  systemd.user.services.import-environment = {
-    description = "Import environment variables for systemd user session";
-    wantedBy = [ "default.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.systemd}/bin/systemctl --user import-environment PATH WAYLAND_DISPLAY XDG_CURRENT_DESKTOP";
-    };
-  };
+  # Note: "import-environment without a list" warning comes from niri-session
+  # It's harmless and hidden by Plymouth during normal boot
 
   # ─────────────────────────────────────────────────────────────────
   # HARDWARE SERVICES
