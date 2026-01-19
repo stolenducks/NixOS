@@ -33,14 +33,25 @@
     loader.efi.canTouchEfiVariables = true;
     loader.timeout = 0;
 
-    plymouth.enable = true;
+    # Plymouth - clean boot/shutdown splash
+    plymouth = {
+      enable = true;
+      theme = "spinner";  # Simple spinner, no extra logos
+    };
 
+    # Hide ALL boot/shutdown text
     consoleLogLevel = 0;
     initrd.verbose = false;
     initrd.systemd.enable = true;
     kernelParams = [
-      "quiet" "splash" "loglevel=3" "udev.log_level=3" "rd.udev.log_level=3"
-      "systemd.show_status=auto" "rd.systemd.show_status=auto"
+      "quiet"
+      "splash"
+      "loglevel=0"
+      "udev.log_level=0"
+      "rd.udev.log_level=0"
+      "vt.global_cursor_default=0"  # Hide cursor
+      "systemd.show_status=false"   # Hide systemd status completely
+      "rd.systemd.show_status=false"
     ];
   };
 
@@ -100,6 +111,17 @@
 
   programs.niri.enable = true;
   programs.xwayland.enable = true;
+
+  # Fix "import-environment without a list" warning
+  # Properly import environment variables into systemd user session
+  systemd.user.services.import-environment = {
+    description = "Import environment variables for systemd user session";
+    wantedBy = [ "default.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.systemd}/bin/systemctl --user import-environment PATH WAYLAND_DISPLAY XDG_CURRENT_DESKTOP";
+    };
+  };
 
   # ─────────────────────────────────────────────────────────────────
   # HARDWARE SERVICES

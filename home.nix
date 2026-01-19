@@ -78,6 +78,54 @@
   };
 
   # ─────────────────────────────────────────────────────────────────
+  # HYPRLOCK (Lock Screen)
+  # ─────────────────────────────────────────────────────────────────
+
+  xdg.configFile."hypr/hyprlock.conf".text = ''
+    # Clean, minimal lock screen
+
+    background {
+      monitor =
+      color = rgb(30, 30, 46)  # Solid dark background (Catppuccin base)
+    }
+
+    input-field {
+      monitor =
+      size = 250, 50
+      outline_thickness = 2
+      dots_size = 0.2
+      dots_spacing = 0.2
+      dots_center = true
+      outer_color = rgb(137, 180, 250)  # Catppuccin blue
+      inner_color = rgb(49, 50, 68)     # Catppuccin surface0
+      font_color = rgb(205, 214, 244)   # Catppuccin text
+      fade_on_empty = false             # ALWAYS show input field
+      fade_timeout = 0
+      placeholder_text =
+      hide_input = false
+      rounding = 10
+      check_color = rgb(166, 227, 161)  # Catppuccin green
+      fail_color = rgb(243, 139, 168)   # Catppuccin red
+      fail_text = <i>$FAIL</i>
+      fail_timeout = 2000
+      position = 0, -20
+      halign = center
+      valign = center
+    }
+
+    label {
+      monitor =
+      text = $TIME
+      color = rgba(205, 214, 244, 1.0)
+      font_size = 64
+      font_family = JetBrainsMono Nerd Font
+      position = 0, 100
+      halign = center
+      valign = center
+    }
+  '';
+
+  # ─────────────────────────────────────────────────────────────────
   # USER PACKAGES
   # ─────────────────────────────────────────────────────────────────
 
