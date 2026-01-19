@@ -25,13 +25,21 @@
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
-        ./configuration.nix
+        # All modules from git repo
+        ./modules/file-manager.nix
+        ./modules/system-tools.nix
+        ./modules/device-services.nix
+
+        # Home Manager
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.users.dolandstutts = import ./home.nix;
         }
+
+        # Hardware is imported from /etc/nixos/ (machine-specific, not in flake)
+        ../hardware-configuration.nix
       ];
     };
   };

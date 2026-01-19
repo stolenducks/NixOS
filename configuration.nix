@@ -9,6 +9,8 @@
 
 {
   imports = [
+    ./hardware-configuration.nix
+    # Custom modules (Tony Banters style - modular, shareable)
     ./modules/file-manager.nix
     ./modules/system-tools.nix
     ./modules/device-services.nix
@@ -24,29 +26,21 @@
 
   # ─────────────────────────────────────────────────────────────────
   # BOOT + PLYMOUTH (Silent Boot)
-  # Reference: https://wiki.nixos.org/wiki/Plymouth
   # ─────────────────────────────────────────────────────────────────
 
   boot = {
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
-    loader.timeout = 0;  # Hide boot menu (press key to show)
+    loader.timeout = 0;
 
-    # Plymouth boot splash
     plymouth.enable = true;
 
-    # Silent boot - hide all messages
     consoleLogLevel = 0;
     initrd.verbose = false;
-    initrd.systemd.enable = true;  # Smoother Plymouth transition
+    initrd.systemd.enable = true;
     kernelParams = [
-      "quiet"
-      "splash"
-      "loglevel=3"
-      "udev.log_level=3"
-      "rd.udev.log_level=3"
-      "systemd.show_status=auto"
-      "rd.systemd.show_status=auto"
+      "quiet" "splash" "loglevel=3" "udev.log_level=3" "rd.udev.log_level=3"
+      "systemd.show_status=auto" "rd.systemd.show_status=auto"
     ];
   };
 
@@ -78,7 +72,6 @@
 
   # ─────────────────────────────────────────────────────────────────
   # LOGIN: greetd Auto-login
-  # Reference: https://wiki.nixos.org/wiki/Greetd
   # ─────────────────────────────────────────────────────────────────
 
   services.greetd = {
@@ -91,7 +84,6 @@
     };
   };
 
-  # Prevent greetd TTY spam on shutdown
   systemd.services.greetd.serviceConfig = {
     Type = "idle";
     StandardInput = "tty";
@@ -141,13 +133,16 @@
   services.openssh.enable = true;
 
   # ─────────────────────────────────────────────────────────────────
-  # MODULES (Tony Banters style - system-level only)
-  # Reference: https://github.com/tonybanters/nixos-from-scratch
-  # Note: system-tools module moved to home.nix (uses Home Manager features)
+  # MODULES (Tony Banters style)
   # ─────────────────────────────────────────────────────────────────
 
   # GUI File Manager (Nautilus)
   modules.file-manager.enable = true;
+
+  # System Tools (btop fix, foot hiding)
+  modules.system-tools.enable = true;
+  modules.system-tools.hideFootServer = true;
+  modules.system-tools.fixBtop = true;
 
   # Device Services (udisks2, GVfs, polkit for automount)
   modules.device-services.enable = true;
@@ -227,48 +222,21 @@
   # ─────────────────────────────────────────────────────────────────
 
   environment.systemPackages = with pkgs; [
-    # Noctalia Shell
     inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
-
-    # AI Coding Agents
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode
-
-    # Editors
     zed-editor
-
-    # File Manager
     superfile
-
-    # Terminal
     foot
-
-    # CLI Tools
     ripgrep fd eza bat fzf zoxide starship tldr jq tree superfile nixd ventoy-full
-
-    # Fish Plugins
     fishPlugins.fzf-fish
     fishPlugins.done
     fishPlugins.autopair
-
-    # System Monitoring
     btop fastfetch ncdu
-
-    # File Management
     wget curl unzip p7zip trash-cli
-
-    # Wayland Utilities
     wl-clipboard cliphist grim slurp hyprlock
-
-    # XWayland
     xwayland-satellite
-
-    # Productivity
     obsidian
-
-    # Theming
     hicolor-icon-theme papirus-icon-theme adwaita-icon-theme
-
-    # Fonts
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code
   ];
