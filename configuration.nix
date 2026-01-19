@@ -167,7 +167,7 @@
     enable = true;
     interactiveShellInit = ''
       set -g fish_greeting
-      set -gx FLAKE ~/NixOS  # Tell nh where your flake is
+      set -gx NH_FLAKE ~/NixOS  # Tell nh where your flake is
       zoxide init fish | source
     '';
     shellAliases = {
