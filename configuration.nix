@@ -38,13 +38,13 @@
     loader.efi.canTouchEfiVariables = true;
     loader.timeout = 0;  # Hidden, but Space key shows menu
 
-    # Plymouth - simple loading bar at bottom
+    # Plymouth - hexagon dots animation
     plymouth = {
       enable = true;
-      theme = "loader";
+      theme = "hexagon_dots_alt";
       themePackages = with pkgs; [
         (adi1090x-plymouth-themes.override {
-          selected_themes = [ "loader" ];
+          selected_themes = [ "hexagon_dots_alt" ];
         })
       ];
     };
