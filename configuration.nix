@@ -9,7 +9,11 @@
 
 {
   imports = [
-    /etc/nixos/hardware-configuration.nix
+    ./hardware-configuration.nix
+    # Custom modules (Tony Banters style - modular, shareable)
+    ./modules/file-manager.nix
+    ./modules/system-tools.nix
+    ./modules/device-services.nix
   ];
 
   # ─────────────────────────────────────────────────────────────────
@@ -133,8 +137,23 @@
   # OTHER SERVICES
   # ─────────────────────────────────────────────────────────────────
 
+  programs.localsend.enable = true;
+
   services.printing.enable = true;
   services.openssh.enable = true;
+
+  # ─────────────────────────────────────────────────────────────────
+  # MODULES (Tony Banters style - system-level only)
+  # Reference: https://github.com/tonybanters/nixos-from-scratch
+  # Note: system-tools module moved to home.nix (uses Home Manager features)
+  # ─────────────────────────────────────────────────────────────────
+
+  # GUI File Manager (Nautilus)
+  modules.file-manager.enable = true;
+
+  # Device Services (udisks2, GVfs, polkit for automount)
+  modules.device-services.enable = true;
+  modules.device-services.automountWithoutPassword = true;
 
   # ─────────────────────────────────────────────────────────────────
   # USER
@@ -226,7 +245,7 @@
     foot
 
     # CLI Tools
-    ripgrep fd eza bat fzf zoxide starship tldr jq tree superfile nixd
+    ripgrep fd eza bat fzf zoxide starship tldr jq tree superfile nixd ventoy-full
 
     # Fish Plugins
     fishPlugins.fzf-fish
@@ -254,6 +273,10 @@
     # Fonts
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code
+  ];
+
+  nixpkgs.config.permittedInsecurePackages = [
+    "ventoy-1.1.10"
   ];
 
   # ─────────────────────────────────────────────────────────────────
