@@ -9,8 +9,6 @@
 
 {
   imports = [
-    ./hardware-configuration.nix
-    # Custom modules (Tony Banters style - modular, shareable)
     ./modules/file-manager.nix
     ./modules/system-tools.nix
     ./modules/device-services.nix
