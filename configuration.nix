@@ -167,6 +167,7 @@
     enable = true;
     interactiveShellInit = ''
       set -g fish_greeting
+      set -gx FLAKE ~/NixOS  # Tell nh where your flake is
       zoxide init fish | source
     '';
     shellAliases = {
@@ -176,7 +177,11 @@
       cat = "bat";
       grep = "rg";
       find = "fd";
-      rebuild = "sudo nixos-rebuild switch --flake ~/NixOS";
+      # nh commands (better UX than raw nixos-rebuild)
+      rebuild = "nh os switch";           # Rebuild with diff preview
+      rebuild-boot = "nh os boot";        # Rebuild, apply on next boot
+      search = "nh search";               # Search packages interactively
+      clean = "nh clean all --keep 5";    # Clean old generations, keep 5
     };
   };
 
@@ -225,6 +230,7 @@
   environment.systemPackages = with pkgs; [
     inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode
+    nh  # Better nixos-rebuild UX with diff, search, clean
     zed-editor
     superfile
     foot
