@@ -132,7 +132,7 @@
   # ─────────────────────────────────────────────────────────────────
 
   hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
+  # Bluetooth managed via bluetui TUI (no blueman)
   services.power-profiles-daemon.enable = true;
   services.upower.enable = true;
 
@@ -265,6 +265,8 @@
     fishPlugins.done
     fishPlugins.autopair
     btop fastfetch ncdu
+    caligula      # TUI disk imager
+    bluetui       # TUI bluetooth manager
     wget curl unzip p7zip trash-cli
     wl-clipboard cliphist grim slurp hyprlock
     xwayland-satellite

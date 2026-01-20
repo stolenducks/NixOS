@@ -46,6 +46,40 @@
       terminal = false;
       categories = [ "System" "Monitor" "ConsoleOnly" ];
     };
+
+    # Bluetooth - TUI manager (replaces blueman)
+    bluetooth = {
+      name = "Bluetooth";
+      genericName = "Bluetooth Manager";
+      comment = "Manage Bluetooth devices";
+      icon = "bluetooth";
+      exec = "${pkgs.foot}/bin/foot -e bluetui";
+      terminal = false;
+      categories = [ "Settings" "HardwareSettings" ];
+    };
+
+    # Hide Blueman entries (replaced by bluetui)
+    blueman-manager = {
+      name = "Bluetooth Manager";
+      exec = "true";
+      noDisplay = true;
+    };
+    blueman-adapters = {
+      name = "Bluetooth Adapters";
+      exec = "true";
+      noDisplay = true;
+    };
+
+    # Caligula - TUI disk imager
+    caligula = {
+      name = "Caligula";
+      genericName = "Disk Imager";
+      comment = "Write disk images to USB drives";
+      icon = "drive-removable-media";
+      exec = "${pkgs.foot}/bin/foot -e caligula";
+      terminal = false;
+      categories = [ "System" "Utility" ];
+    };
   };
 
   # ─────────────────────────────────────────────────────────────────
