@@ -260,7 +260,7 @@
     zed-editor
     superfile
     foot
-    ripgrep fd eza bat fzf zoxide starship tldr jq tree superfile nixd ventoy-full
+    ripgrep fd eza bat fzf gum zoxide starship tldr jq tree superfile nixd ventoy-full
     fishPlugins.fzf-fish
     fishPlugins.done
     fishPlugins.autopair

@@ -58,25 +58,21 @@
       categories = [ "Settings" "HardwareSettings" ];
     };
 
-    # Hide Blueman entries (replaced by bluetui)
-    blueman-manager = {
-      name = "Bluetooth Manager";
+    # Hide Bluetui entry (replaced by bluetooth entry)
+    bluetui = {
+      name = "Bluetui";
       exec = "true";
       noDisplay = true;
-    };
-    blueman-adapters = {
-      name = "Bluetooth Adapters";
-      exec = "true";
-      noDisplay = true;
+      settings.Hidden = "true";
     };
 
-    # Caligula - TUI disk imager
-    caligula = {
-      name = "Caligula";
+    # Burn ISO - guided flow then Caligula
+    burn-iso = {
+      name = "Burn ISO";
       genericName = "Disk Imager";
-      comment = "Write disk images to USB drives";
+      comment = "Download, select, and burn ISO images";
       icon = "drive-removable-media";
-      exec = "${pkgs.foot}/bin/foot -e caligula";
+      exec = "${pkgs.foot}/bin/foot -e burn-iso";
       terminal = false;
       categories = [ "System" "Utility" ];
     };
@@ -92,16 +88,13 @@
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
     };
-    theme = {
-      name = "Catppuccin-Mocha";
-      package = pkgs.catppuccin-gtk;
-    };
   };
 
   qt = {
     enable = true;
     platformTheme.name = "gtk";
   };
+
 
   # ─────────────────────────────────────────────────────────────────
   # SESSION VARIABLES
@@ -157,6 +150,57 @@
   home.packages = with pkgs; [
     # GUI apps that aren't in system config
     # (Add more here as needed)
+    (writeShellApplication {
+      name = "burn-iso";
+      runtimeInputs = [ gum fd fzf curl caligula coreutils ];
+      text = ''
+        set -euo pipefail
+
+        downloads_dir="$HOME/Downloads"
+        if [ ! -d "$downloads_dir" ]; then
+          gum style --foreground 1 "Downloads directory not found: $downloads_dir"
+          exit 1
+        fi
+
+        gum style --bold "Burn ISO"
+        gum style "Step 1: Download an ISO (optional)"
+
+        if gum confirm "Download an ISO from a URL?"; then
+          url=$(gum input --placeholder "https://example.com/image.iso" --prompt "ISO URL: ")
+          if [ -z "$url" ]; then
+            gum style --foreground 1 "No URL provided."
+            exit 1
+          fi
+
+          filename=$(basename "$url")
+          if [ -z "$filename" ]; then
+            gum style --foreground 1 "Could not determine filename from URL."
+            exit 1
+          fi
+
+          output_path="$downloads_dir/$filename"
+          gum spin --title "Downloading ISO..." -- curl -L --progress-bar -o "$output_path" "$url"
+          gum style --foreground 2 "Downloaded to: $output_path"
+        fi
+
+        gum style "Step 2: Select an ISO file"
+        iso=$(fd -i --hidden -e iso -e img -e bin -e raw -e dmg -e udf . "$HOME" --exclude .git --exclude .cache --exclude .local/share/Trash | sort -r | fzf --prompt "Select image: " --delimiter / --with-nth -1 --preview 'ls -lh {}' --height 40% --border || true)
+
+        if [ -z "$iso" ]; then
+          gum style --foreground 1 "No ISO selected (no .iso files found under $downloads_dir)."
+          exit 1
+        fi
+
+        gum style --bold "Selected ISO:"
+        gum style "$iso"
+
+        if ! gum confirm "Proceed to Caligula to burn this ISO?"; then
+          exit 0
+        fi
+
+        exec caligula burn "$iso"
+      '';
+    })
   ];
 
   # ─────────────────────────────────────────────────────────────────
