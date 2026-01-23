@@ -14,35 +14,17 @@
   programs.home-manager.enable = true;
 
   # ─────────────────────────────────────────────────────────────────
-  # DESKTOP ENTRIES (Fix btop, hide foot server/client)
+  # DESKTOP ENTRIES (TUI apps launched in Ghostty)
   # ─────────────────────────────────────────────────────────────────
 
   xdg.desktopEntries = {
-    # Hide Foot Server - it's a daemon, not an application
-    foot-server = {
-      name = "Foot Server";
-      exec = "${pkgs.foot}/bin/foot --server";
-      icon = "foot";
-      terminal = false;
-      noDisplay = true;
-    };
-
-    # Hide Foot Client - rarely used manually
-    foot-client = {
-      name = "Foot Client";
-      exec = "${pkgs.foot}/bin/footclient";
-      icon = "foot";
-      terminal = false;
-      noDisplay = true;
-    };
-
-    # Fix btop++ launcher - explicitly runs in foot terminal
+    # Fix btop++ launcher - explicitly runs in ghostty terminal
     btop = {
       name = "btop++";
       genericName = "System Monitor";
       comment = "Resource monitor with graphs for CPU, memory, disks, network";
       icon = "utilities-system-monitor";
-      exec = "${pkgs.foot}/bin/foot -e btop";
+      exec = "${pkgs.ghostty}/bin/ghostty -e btop";
       terminal = false;
       categories = [ "System" "Monitor" "ConsoleOnly" ];
     };
@@ -53,7 +35,7 @@
       genericName = "Bluetooth Manager";
       comment = "Manage Bluetooth devices";
       icon = "bluetooth";
-      exec = "${pkgs.foot}/bin/foot -e bluetui";
+      exec = "${pkgs.ghostty}/bin/ghostty -e bluetui";
       terminal = false;
       categories = [ "Settings" "HardwareSettings" ];
     };
@@ -72,7 +54,7 @@
       genericName = "Disk Imager";
       comment = "Download, select, and burn ISO images";
       icon = "drive-removable-media";
-      exec = "${pkgs.foot}/bin/foot -e burn-iso";
+      exec = "${pkgs.ghostty}/bin/ghostty -e burn-iso";
       terminal = false;
       categories = [ "System" "Utility" ];
     };
@@ -170,6 +152,76 @@
       position = 0, 40
       halign = center
       valign = center
+    }
+  '';
+
+  # ─────────────────────────────────────────────────────────────────
+  # GHOSTTY (Terminal Emulator)
+  # ─────────────────────────────────────────────────────────────────
+
+  xdg.configFile."ghostty/config".text = ''
+    # Font
+    font-family = "JetBrainsMono Nerd Font"
+    font-size = 13
+
+    # Theme - Nord
+    theme = "nord"
+
+    # Window
+    window-padding-x = 10
+    window-padding-y = 10
+    window-decoration = false
+    gtk-titlebar = false
+
+    # Cursor
+    cursor-style = bar
+    cursor-style-blink = false
+
+    # Shell integration
+    shell-integration = fish
+
+    # Scrollback
+    scrollback-limit = 10000
+
+    # Clipboard
+    copy-on-select = true
+    clipboard-paste-protection = false
+
+    # Keybindings
+    keybind = ctrl+shift+c=copy_to_clipboard
+    keybind = ctrl+shift+v=paste_from_clipboard
+    keybind = ctrl+shift+n=new_window
+    keybind = ctrl+plus=increase_font_size:1
+    keybind = ctrl+minus=decrease_font_size:1
+    keybind = ctrl+zero=reset_font_size
+
+    # Background opacity (subtle transparency)
+    background-opacity = 0.95
+
+    # Shader - CRT scanline effect (subtle)
+    # custom-shader = ~/.config/ghostty/shaders/crt.glsl
+  '';
+
+  # CRT shader for Ghostty (optional - uncomment custom-shader above to enable)
+  xdg.configFile."ghostty/shaders/crt.glsl".text = ''
+    // CRT Shader - Subtle scanlines effect
+    // Based on ghostty-shaders community collection
+
+    void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+        vec2 uv = fragCoord.xy / iResolution.xy;
+
+        // Sample the terminal texture
+        vec4 color = texture(iChannel0, uv);
+
+        // Subtle scanline effect
+        float scanline = sin(fragCoord.y * 1.5) * 0.02;
+        color.rgb -= scanline;
+
+        // Very subtle vignette
+        float vignette = 1.0 - length(uv - 0.5) * 0.3;
+        color.rgb *= vignette;
+
+        fragColor = color;
     }
   '';
 
@@ -299,7 +351,7 @@
 
     binds {
         // ── Applications ────────────────────────────────────────────
-        Mod+Return { spawn "foot"; }
+        Mod+Return { spawn "ghostty"; }
         Mod+Space { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
         Mod+D { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
         Mod+E { spawn "zeditor"; }

@@ -163,9 +163,8 @@
   # GUI File Manager (Nautilus)
   modules.file-manager.enable = true;
 
-  # System Tools (btop fix, foot hiding)
+  # System Tools (btop launcher fix)
   modules.system-tools.enable = true;
-  modules.system-tools.hideFootServer = true;
   modules.system-tools.fixBtop = true;
 
   # Device Services (udisks2, GVfs, polkit for automount)
@@ -257,7 +256,7 @@
     nh  # Better nixos-rebuild UX with diff, search, clean
     zed-editor
     superfile
-    foot
+    ghostty
     ripgrep fd eza bat fzf gum zoxide starship tldr jq tree superfile nixd ventoy-full
     fishPlugins.fzf-fish
     fishPlugins.done
@@ -297,7 +296,7 @@
     [Desktop Entry]
     Name=Superfile
     Comment=Modern terminal file manager
-    Exec=foot superfile
+    Exec=ghostty -e superfile
     Icon=system-file-manager
     Terminal=false
     Type=Application
@@ -308,7 +307,7 @@
     [Desktop Entry]
     Name=OpenCode
     Comment=AI coding agent
-    Exec=foot opencode
+    Exec=ghostty -e opencode
     Icon=code
     Terminal=false
     Type=Application

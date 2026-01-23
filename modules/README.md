@@ -1,102 +1,156 @@
-# NixOS Modules - Tony Banters Style
+# NixOS Custom Modules
 
-Modular, shareable NixOS configuration following Tony Banters' methodology.
-Reference: https://github.com/tonybanters/nixos-from-scratch
+Modular, reusable NixOS configuration components following the Tony Banters methodology.
 
-## Structure
+## Module Pattern
 
-```
-~/nixos/
-├── modules/
-│   ├── file-manager.nix    # GUI file manager (Nautilus)
-│   ├── system-tools.nix    # btop fix, foot hiding
-│   ├── device-services.nix # udisks2, GVfs, polkit
-│   └── README.md           # This file
-├── home.nix                # Home Manager user configuration
-└── README.md               # This file
-```
-
-## Usage
-
-### In your `/etc/nixos/configuration.nix`:
+All modules use the standard NixOS module system:
 
 ```nix
-{ config, pkgs, inputs, ... }:
-
-{
-  imports = [
-    ./hardware-configuration.nix
-    # Import modules from home directory
-    "${config.home.homeDirectory}/nixos/modules/file-manager.nix"
-    "${config.home.homeDirectory}/nixos/modules/system-tools.nix"
-    "${config.home.homeDirectory}/nixos/modules/device-services.nix"
-  ];
-
-  # Enable modules
-  modules.file-manager.enable = true;
-  modules.file-manager.enableCloud = true;
-
-  modules.system-tools.enable = true;
-  modules.system-tools.hideFootServer = true;
-  modules.system-tools.fixBtop = true;
-
-  modules.device-services.enable = true;
-  modules.device-services.automountWithoutPassword = true;
-}
-```
-
-### Optional: Home Manager for user-level config
-
-Add to `flake.nix`:
-```nix
-{
-  inputs = {
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+{ config, lib, pkgs, ... }:
+let cfg = config.modules.<name>;
+in {
+  options.modules.<name> = {
+    enable = lib.mkEnableOption "<description>";
+    # Additional options with lib.mkOption
   };
-
-  outputs = { self, nixpkgs, home-manager, ... }: {
-    nixosConfigurations.yourhost = nixpkgs.lib.nixosSystem {
-      # ...
-      modules = [
-        ./configuration.nix
-        home-manager.nixosModules.home-manager
-        {
-          home-manager.users.youruser = import /home/youruser/nixos/home.nix;
-        }
-      ];
-    };
+  
+  config = lib.mkIf cfg.enable {
+    # Configuration applied when enabled
   };
 }
 ```
 
-## Module Options
+## Available Modules
 
 ### file-manager.nix
-- `modules.file-manager.enable` - Enable GUI file manager (Nautilus)
-- `modules.file-manager.enableCloud` - Enable cloud storage integration (Google Drive, NextCloud)
+
+GUI file manager with removable device support.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `modules.file-manager.enable` | bool | false | Enable Nautilus file manager |
+
+**What it enables:**
+- `pkgs.nautilus` - GNOME Files GUI
+- `services.udisks2` - Removable device mounting
+- `services.gvfs` - Cloud storage, network shares, trash
+
+**Usage:**
+```nix
+modules.file-manager.enable = true;
+```
+
+---
 
 ### system-tools.nix
-- `modules.system-tools.enable` - Enable system tools configuration
-- `modules.system-tools.hideFootServer` - Hide Foot Server/Client from launcher
-- `modules.system-tools.fixBtop` - Fix btop++ launcher to work in terminal
+
+Desktop entry fixes for CLI tools that don't integrate well with app launchers.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `modules.system-tools.enable` | bool | false | Enable system tools fixes |
+| `modules.system-tools.fixBtop` | bool | false | Make btop++ open in ghostty terminal |
+
+**What it fixes:**
+- btop++ desktop entry runs `ghostty -e btop` instead of broken `Terminal=true`
+
+**Usage:**
+```nix
+modules.system-tools.enable = true;
+modules.system-tools.fixBtop = true;
+```
+
+---
 
 ### device-services.nix
-- `modules.device-services.enable` - Enable device services
-- `modules.device-services.enableUdiskie` - Enable udiskie tray for automount
-- `modules.device-services.automountWithoutPassword` - Allow automount without password
 
-## Tony's Best Practices
+Device mounting services and polkit rules for passwordless automount.
 
-1. **Modular structure** - Each concern in its own module
-2. **Shareable** - Modules can be copied between machines
-3. **Declarative** - Everything in code, no manual config
-4. **Reproducible** - Uses flakes for pinned dependencies
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `modules.device-services.enable` | bool | false | Enable device services |
+| `modules.device-services.automountWithoutPassword` | bool | false | Wheel group can mount without password |
+
+**What it enables:**
+- `services.udisks2` - USB/removable device mounting
+- `services.gvfs` - Virtual filesystem (cloud, network, trash)
+- `security.polkit` - Authorization framework
+- Polkit rule: `org.freedesktop.udisks2.*` actions allowed for wheel group
+
+**Usage:**
+```nix
+modules.device-services.enable = true;
+modules.device-services.automountWithoutPassword = true;
+```
+
+## Creating New Modules
+
+### 1. Create the file
+
+```bash
+touch ~/NixOS/modules/my-feature.nix
+```
+
+### 2. Use the template
+
+```nix
+{ config, lib, pkgs, ... }:
+let cfg = config.modules.my-feature;
+in {
+  options.modules.my-feature = {
+    enable = lib.mkEnableOption "My feature description";
+    
+    # Add typed options
+    someSetting = lib.mkOption {
+      type = lib.types.str;
+      default = "default-value";
+      description = "What this setting does";
+    };
+  };
+  
+  config = lib.mkIf cfg.enable {
+    # System packages
+    environment.systemPackages = [ pkgs.some-package ];
+    
+    # Services
+    services.some-service.enable = true;
+    
+    # Use the option value
+    services.some-service.setting = cfg.someSetting;
+  };
+}
+```
+
+### 3. Import in configuration.nix
+
+```nix
+imports = [
+  ./hardware-configuration.nix
+  ./modules/file-manager.nix
+  ./modules/system-tools.nix
+  ./modules/device-services.nix
+  ./modules/my-feature.nix  # Add this
+];
+```
+
+### 4. Enable the module
+
+```nix
+modules.my-feature.enable = true;
+modules.my-feature.someSetting = "custom-value";
+```
+
+## Best Practices
+
+1. **Single responsibility** - One concern per module
+2. **Sensible defaults** - Modules should work with just `enable = true`
+3. **Document options** - Add `description` to all `mkOption` calls
+4. **Use `mkIf`** - Never apply config unless module is enabled
+5. **Avoid hardcoding** - Use options for anything that might vary
 
 ## References
 
-- [Tony Banters - NixOS from Scratch](https://github.com/tonybanters/nixos-from-scratch)
-- [Niri + Noctalia Setup](https://www.tonybtw.com/tutorial/niri/)
-- [Quickshell Tutorial](https://www.tonybtw.com/tutorial/quickshell/)
+- [NixOS Module System](https://nixos.wiki/wiki/Module)
+- [lib.mkOption documentation](https://nixos.org/manual/nixpkgs/stable/#sec-option-declarations)
+- [Tony Banters NixOS tutorials](https://www.tonybtw.com/)
