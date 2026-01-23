@@ -1,8 +1,8 @@
 # ╔══════════════════════════════════════════════════════════════════╗
-# ║  NixOS Configuration                                              ║
+# ║  NixOS Configuration - ThinkPad X1 Carbon Gen 8                   ║
 # ║  Host: nixos                                                      ║
 # ║  Desktop: Niri + Noctalia                                         ║
-# ║  Login: Auto-login + Swaylock                                     ║
+# ║  Boot: Plymouth (Catppuccin) → greetd → Niri → Hyprlock           ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
 { config, pkgs, inputs, ... }:
@@ -25,28 +25,28 @@
   nixpkgs.config.allowUnfree = true;
 
   # ─────────────────────────────────────────────────────────────────
-  # BOOT + PLYMOUTH (Silent Boot)
+  # BOOT + PLYMOUTH (Silent Boot - Mac-style NixOS theme)
   # ─────────────────────────────────────────────────────────────────
 
   boot = {
     loader.systemd-boot = {
       enable = true;
-      # Press Space to show boot menu (hidden by default)
-      # This lets you select previous NixOS generations
+      configurationLimit = 10;  # Keep last 10 generations
       editor = false;  # Disable kernel cmdline editing for security
     };
     loader.efi.canTouchEfiVariables = true;
-    loader.timeout = 0;  # Hidden, but Space key shows menu
+    loader.timeout = 0;  # Hidden, Space key shows menu
 
-    # Plymouth - hexagon dots animation
+    # Plymouth - Mac-style animated NixOS logo
     plymouth = {
       enable = true;
-      theme = "hexagon_dots_alt";
-      themePackages = with pkgs; [
-        (adi1090x-plymouth-themes.override {
-          selected_themes = [ "hexagon_dots_alt" ];
-        })
-      ];
+      theme = "mac-style";
+      themePackages = [ pkgs.mac-style-plymouth ];
+      extraConfig = ''
+        [Daemon]
+        ShowDelay=0
+        DeviceTimeout=8
+      '';
     };
 
     # Hide ALL boot/shutdown text
@@ -63,9 +63,12 @@
       "systemd.show_status=false"   # Hide systemd status completely
       "rd.systemd.show_status=false"
       "fbcon=nodefer"               # Prevent early framebuffer console
-      "vt.handoff=7"                # Hand off to Plymouth on VT7
+      "vt.handoff=7"                # Seamless Plymouth → compositor handoff
+      "i915.fastboot=1"             # Intel GPU fast boot (ThinkPad X1)
     ];
   };
+
+
 
   # ─────────────────────────────────────────────────────────────────
   # NETWORKING
@@ -94,27 +97,25 @@
   };
 
   # ─────────────────────────────────────────────────────────────────
-  # LOGIN: greetd Auto-login
+  # LOGIN: greetd Auto-login (Seamless - No TTY flash)
   # ─────────────────────────────────────────────────────────────────
 
   services.greetd = {
     enable = true;
+    restart = false;  # Don't restart on session exit (prevents re-autologin loop)
     settings = {
+      # initial_session runs once at boot - bypasses greeter entirely
+      # Redirect stderr to suppress "import-environment" warning
+      initial_session = {
+        command = "${pkgs.niri}/bin/niri-session 2>/dev/null";
+        user = "dolandstutts";
+      };
+      # Fallback if initial_session exits (logout/crash)
       default_session = {
-        command = "${pkgs.niri}/bin/niri-session";
+        command = "${pkgs.niri}/bin/niri-session 2>/dev/null";
         user = "dolandstutts";
       };
     };
-  };
-
-  systemd.services.greetd.serviceConfig = {
-    Type = "idle";
-    StandardInput = "tty";
-    StandardOutput = "tty";
-    StandardError = "journal";
-    TTYReset = true;
-    TTYVHangup = true;
-    TTYVTDisallocate = true;
   };
 
   # ─────────────────────────────────────────────────────────────────
@@ -123,9 +124,6 @@
 
   programs.niri.enable = true;
   programs.xwayland.enable = true;
-
-  # Note: "import-environment without a list" warning comes from niri-session
-  # It's harmless and hidden by Plymouth during normal boot
 
   # ─────────────────────────────────────────────────────────────────
   # HARDWARE SERVICES

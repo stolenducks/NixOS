@@ -105,43 +105,390 @@
   };
 
   # ─────────────────────────────────────────────────────────────────
-  # HYPRLOCK (Lock Screen) - Ultra minimal for fast load
+  # HYPRLOCK (Lock Screen) - Optimized for boot-to-lock
   # ─────────────────────────────────────────────────────────────────
 
   xdg.configFile."hypr/hyprlock.conf".text = ''
     general {
       disable_loading_bar = true
+      hide_cursor = true
+      ignore_empty_input = true
       immediate_render = true
       no_fade_in = true
       no_fade_out = true
-      grace = 0
     }
 
     background {
       monitor =
-      color = rgb(30, 30, 46)
+      path = /home/dolandstutts/Pictures/Wallpapers/mojave-night.jpg
+      # Fallback: Nord Polar Night
+      color = rgb(46, 52, 64)
+      blur_passes = 0
+      contrast = 1.0
+      brightness = 1.0
     }
 
     input-field {
       monitor =
       size = 300, 50
-      outline_thickness = 0
+      outline_thickness = 2
       dots_size = 0.25
-      dots_spacing = 0.15
+      dots_spacing = 0.3
       dots_center = true
-      outer_color = rgb(30, 30, 46)
-      inner_color = rgb(69, 71, 90)
-      font_color = rgb(205, 214, 244)
+      # Nord colors
+      outer_color = rgb(143, 188, 187)
+      inner_color = rgb(59, 66, 82)
+      font_color = rgb(236, 239, 244)
       fade_on_empty = false
-      fade_timeout = 0
-      placeholder_text =
       hide_input = false
+      placeholder_text = <i>Password...</i>
       rounding = 8
-      position = 0, 0
+      position = 0, -100
+      halign = center
+      valign = center
+    }
+
+    # Time display (12-hour format)
+    label {
+      monitor =
+      text = cmd[update:1000] echo "$(date +'%-I:%M %p')"
+      color = rgb(236, 239, 244)
+      font_size = 72
+      font_family = JetBrainsMono Nerd Font
+      position = 0, 100
+      halign = center
+      valign = center
+    }
+
+    # Date display
+    label {
+      monitor =
+      text = cmd[update:60000] echo "$(date '+%A, %B %d')"
+      color = rgb(216, 222, 233)
+      font_size = 18
+      font_family = JetBrainsMono Nerd Font
+      position = 0, 40
       halign = center
       valign = center
     }
   '';
+
+  # ─────────────────────────────────────────────────────────────────
+  # NIRI (Managed config)
+  # ─────────────────────────────────────────────────────────────────
+
+  xdg.configFile."niri/config.kdl".text = ''
+    // ╔══════════════════════════════════════════════════════════════════╗
+    // ║  Niri Configuration                                               ║
+    // ║  Shell: Noctalia                                                  ║
+    // ╚══════════════════════════════════════════════════════════════════╝
+
+    // ─────────────────────────────────────────────────────────────────
+    // INPUT
+    // ─────────────────────────────────────────────────────────────────
+
+    input {
+        keyboard {
+            xkb {
+                layout "us"
+            }
+        }
+
+        touchpad {
+            tap
+            natural-scroll
+            click-method "clickfinger"
+        }
+
+        mouse {
+        }
+
+        warp-mouse-to-focus
+        focus-follows-mouse max-scroll-amount="0%"
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // LAYOUT
+    // ─────────────────────────────────────────────────────────────────
+
+    layout {
+        gaps 10
+
+        center-focused-column "never"
+
+        preset-column-widths {
+            proportion 0.33333
+            proportion 0.5
+            proportion 0.66667
+        }
+
+        default-column-width { proportion 0.5; }
+
+        focus-ring {
+            width 3
+            active-color "#7fc8ff"
+            inactive-color "#505050"
+        }
+
+        border {
+            off
+        }
+
+        shadow {
+            on
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // ENVIRONMENT
+    // ─────────────────────────────────────────────────────────────────
+
+    environment {
+        NIXOS_OZONE_WL "1"
+        XDG_CURRENT_DESKTOP "niri"
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // STARTUP (Hyprlock first for boot-to-lock-screen)
+    // ─────────────────────────────────────────────────────────────────
+
+    spawn-at-startup "hyprlock" "--immediate" "--no-fade-in"
+    spawn-at-startup "xwayland-satellite"
+    spawn-at-startup "noctalia-shell"
+
+    // ─────────────────────────────────────────────────────────────────
+    // APPEARANCE
+    // ─────────────────────────────────────────────────────────────────
+
+    cursor {
+        xcursor-theme "Adwaita"
+        xcursor-size 24
+    }
+
+    hotkey-overlay {
+        skip-at-startup
+    }
+
+    prefer-no-csd
+
+    screenshot-path "~/Pictures/Screenshots/Screenshot %Y-%m-%d %H-%M-%S.png"
+
+    // ─────────────────────────────────────────────────────────────────
+    // WINDOW RULES
+    // ─────────────────────────────────────────────────────────────────
+
+    window-rule {
+        match app-id="dev.zed.Zed"
+        geometry-corner-radius 0
+        draw-border-with-background true
+    }
+
+    window-rule {
+        match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+        open-floating true
+    }
+
+    window-rule {
+        geometry-corner-radius 0
+        clip-to-geometry true
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // KEY BINDINGS
+    // ─────────────────────────────────────────────────────────────────
+
+    binds {
+        // ── Applications ────────────────────────────────────────────
+        Mod+Return { spawn "foot"; }
+        Mod+Space { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
+        Mod+D { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
+        Mod+E { spawn "zeditor"; }
+
+        // ── Noctalia Panels ─────────────────────────────────────────
+        Mod+Escape { spawn "noctalia-shell" "ipc" "call" "sessionMenu" "toggle"; }
+        Mod+N { spawn "noctalia-shell" "ipc" "call" "notificationHistory" "toggle"; }
+
+        // ── Hotkey Help ─────────────────────────────────────────────
+        Mod+Shift+Slash { show-hotkey-overlay; }
+
+        // ── Window Management ───────────────────────────────────────
+        Mod+Q { close-window; }
+        Mod+W { close-window; }
+
+        // ── Focus ───────────────────────────────────────────────────
+        Mod+Left  { focus-column-left; }
+        Mod+Down  { focus-window-down; }
+        Mod+Up    { focus-window-up; }
+        Mod+Right { focus-column-right; }
+        Mod+H     { focus-column-left; }
+        Mod+J     { focus-window-down; }
+        Mod+K     { focus-window-up; }
+        Mod+L     { focus-column-right; }
+
+        // ── Move Windows ────────────────────────────────────────────
+        Mod+Ctrl+Left  { move-column-left; }
+        Mod+Ctrl+Down  { move-window-down; }
+        Mod+Ctrl+Up    { move-window-up; }
+        Mod+Ctrl+Right { move-column-right; }
+        Mod+Ctrl+H     { move-column-left; }
+        Mod+Ctrl+J     { move-window-down; }
+        Mod+Ctrl+K     { move-window-up; }
+        Mod+Ctrl+L     { move-column-right; }
+
+        // ── First/Last Column ───────────────────────────────────────
+        Mod+Home { focus-column-first; }
+        Mod+End  { focus-column-last; }
+        Mod+Ctrl+Home { move-column-to-first; }
+        Mod+Ctrl+End  { move-column-to-last; }
+
+        // ── Monitor Focus ───────────────────────────────────────────
+        Mod+Shift+Left  { focus-monitor-left; }
+        Mod+Shift+Down  { focus-monitor-down; }
+        Mod+Shift+Up    { focus-monitor-up; }
+        Mod+Shift+Right { focus-monitor-right; }
+        Mod+Shift+H     { focus-monitor-left; }
+        Mod+Shift+J     { focus-monitor-down; }
+        Mod+Shift+K     { focus-monitor-up; }
+        Mod+Shift+L     { focus-monitor-right; }
+
+        // ── Move to Monitor ─────────────────────────────────────────
+        Mod+Shift+Ctrl+Left  { move-column-to-monitor-left; }
+        Mod+Shift+Ctrl+Down  { move-column-to-monitor-down; }
+        Mod+Shift+Ctrl+Up    { move-column-to-monitor-up; }
+        Mod+Shift+Ctrl+Right { move-column-to-monitor-right; }
+        Mod+Shift+Ctrl+H     { move-column-to-monitor-left; }
+        Mod+Shift+Ctrl+J     { move-column-to-monitor-down; }
+        Mod+Shift+Ctrl+K     { move-column-to-monitor-up; }
+        Mod+Shift+Ctrl+L     { move-column-to-monitor-right; }
+
+        // ── Workspaces ──────────────────────────────────────────────
+        Mod+Page_Down { focus-workspace-down; }
+        Mod+Page_Up   { focus-workspace-up; }
+        Mod+U         { focus-workspace-down; }
+        Mod+I         { focus-workspace-up; }
+
+        Mod+Ctrl+Page_Down { move-column-to-workspace-down; }
+        Mod+Ctrl+Page_Up   { move-column-to-workspace-up; }
+        Mod+Ctrl+U         { move-column-to-workspace-down; }
+        Mod+Ctrl+I         { move-column-to-workspace-up; }
+
+        Mod+Shift+Page_Down { move-workspace-down; }
+        Mod+Shift+Page_Up   { move-workspace-up; }
+        Mod+Shift+U         { move-workspace-down; }
+        Mod+Shift+I         { move-workspace-up; }
+
+        Mod+1 { focus-workspace 1; }
+        Mod+2 { focus-workspace 2; }
+        Mod+3 { focus-workspace 3; }
+        Mod+4 { focus-workspace 4; }
+        Mod+5 { focus-workspace 5; }
+        Mod+6 { focus-workspace 6; }
+        Mod+7 { focus-workspace 7; }
+        Mod+8 { focus-workspace 8; }
+        Mod+9 { focus-workspace 9; }
+
+        Mod+Ctrl+1 { move-column-to-workspace 1; }
+        Mod+Ctrl+2 { move-column-to-workspace 2; }
+        Mod+Ctrl+3 { move-column-to-workspace 3; }
+        Mod+Ctrl+4 { move-column-to-workspace 4; }
+        Mod+Ctrl+5 { move-column-to-workspace 5; }
+        Mod+Ctrl+6 { move-column-to-workspace 6; }
+        Mod+Ctrl+7 { move-column-to-workspace 7; }
+        Mod+Ctrl+8 { move-column-to-workspace 8; }
+        Mod+Ctrl+9 { move-column-to-workspace 9; }
+
+        // ── Column/Window Operations ────────────────────────────────
+        Mod+Comma  { consume-window-into-column; }
+        Mod+Period { expel-window-from-column; }
+
+        Mod+BracketLeft  { consume-or-expel-window-left; }
+        Mod+BracketRight { consume-or-expel-window-right; }
+
+        // ── Sizing ──────────────────────────────────────────────────
+        Mod+R { switch-preset-column-width; }
+        Mod+Shift+R { switch-preset-window-height; }
+        Mod+Ctrl+R { reset-window-height; }
+        Mod+F { maximize-column; }
+        Mod+Shift+F { fullscreen-window; }
+        Mod+C { center-column; }
+
+        Mod+Minus { set-column-width "-10%"; }
+        Mod+Equal { set-column-width "+10%"; }
+        Mod+Shift+Minus { set-window-height "-10%"; }
+        Mod+Shift+Equal { set-window-height "+10%"; }
+
+        // ── Floating ────────────────────────────────────────────────
+        Mod+V       { toggle-window-floating; }
+        Mod+Shift+V { switch-focus-between-floating-and-tiling; }
+
+        // ── Screenshots ─────────────────────────────────────────────
+        Print { screenshot; }
+        Ctrl+Print { screenshot-screen; }
+        Alt+Print { screenshot-window; }
+
+        // ── Media Keys ──────────────────────────────────────────────
+        XF86AudioRaiseVolume allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "volume" "increase"; }
+        XF86AudioLowerVolume allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "volume" "decrease"; }
+        XF86AudioMute        allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "volume" "muteOutput"; }
+        XF86AudioMicMute     allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "volume" "muteInput"; }
+
+        XF86MonBrightnessUp   allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "brightness" "increase"; }
+        XF86MonBrightnessDown allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "brightness" "decrease"; }
+
+        // ── Session ─────────────────────────────────────────────────
+        Mod+Shift+E { quit; }
+        Mod+Shift+P { power-off-monitors; }
+        Mod+O { toggle-overview; }
+    }
+
+    include "./noctalia.kdl"
+  '';
+
+  xdg.configFile."niri/noctalia.kdl".text = ''
+    layout {
+
+        focus-ring {
+            active-color   "#8fbcbb"
+            inactive-color "#2e3440"
+            urgent-color   "#bf616a"
+        }
+
+        border {
+            active-color   "#8fbcbb"
+            inactive-color "#2e3440"
+            urgent-color   "#bf616a"
+        }
+
+        shadow {
+            color "#2e344070"
+        }
+
+        tab-indicator {
+            active-color   "#8fbcbb"
+            inactive-color "#2e6b69"
+            urgent-color   "#bf616a"
+        }
+
+        insert-hint {
+            color "#8fbcbb80"
+        }
+    }
+
+    recent-windows {
+        highlight {
+            active-color "#8fbcbb"
+            urgent-color "#bf616a"
+        }
+    }
+  '';
+
+  # ─────────────────────────────────────────────────────────────────
+  # USER SERVICES
+  # ─────────────────────────────────────────────────────────────────
+
+  # Note: Hyprlock autostart is now handled via Niri's spawn-at-startup
+  # in the niri config above. This is cleaner and more reliable than
+  # a systemd service that waits for Noctalia wallpaper state.
 
   # ─────────────────────────────────────────────────────────────────
   # USER PACKAGES
@@ -150,6 +497,7 @@
   home.packages = with pkgs; [
     # GUI apps that aren't in system config
     # (Add more here as needed)
+
     (writeShellApplication {
       name = "burn-iso";
       runtimeInputs = [ gum fd fzf curl caligula coreutils ];
