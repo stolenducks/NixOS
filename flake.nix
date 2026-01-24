@@ -31,9 +31,14 @@
       url = "github:SergioRibera/s4rchiso-plymouth-theme";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    helium-browser = {
+      url = "github:AlvaroParker/helium-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, noctalia, llm-agents, catppuccin, nixos-hardware, mac-style-plymouth, ... }: {
+  outputs = inputs@{ self, nixpkgs, home-manager, noctalia, llm-agents, catppuccin, nixos-hardware, mac-style-plymouth, helium-browser, ... }: {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };

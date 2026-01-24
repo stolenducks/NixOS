@@ -34,8 +34,7 @@ sudo nixos-rebuild switch --flake ~/NixOS
 │   ├── file-manager.nix
 │   ├── system-tools.nix
 │   └── device-services.nix
-├── AGENT.md            # AI assistant context
-└── .opencode/          # OpenCode project config
+└── README.md
 ```
 
 ## Commands
@@ -49,7 +48,6 @@ sudo nixos-rebuild switch --flake ~/NixOS
 
 ## Documentation
 
-- [AGENT.md](./AGENT.md) - Comprehensive system documentation for AI assistants
 - [modules/README.md](./modules/README.md) - Custom module documentation
 
 ## Links

@@ -200,6 +200,7 @@
       cat = "bat";
       grep = "rg";
       find = "fd";
+      ff = "fastfetch";
       # nh commands with styled gum banners
       rebuild = "gum style --border thick --border-foreground 110 --foreground 255 --bold --padding '0 2' '󱄅 NixOS Rebuild' && nh os switch";
       rebuild-boot = "gum style --border thick --border-foreground 110 --foreground 255 --bold --padding '0 2' '󱄅 NixOS Boot' && nh os boot";
@@ -243,7 +244,6 @@
   # PROGRAMS
   # ─────────────────────────────────────────────────────────────────
 
-  programs.firefox.enable = true;
   programs.git.enable = true;
 
   # ─────────────────────────────────────────────────────────────────
@@ -253,6 +253,7 @@
   environment.systemPackages = with pkgs; [
     inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode
+    inputs.helium-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     nh  # Better nixos-rebuild UX with diff, search, clean
     zed-editor
     yazi

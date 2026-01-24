@@ -80,6 +80,17 @@
       terminal = false;
       categories = [ "Development" "IDE" ];
     };
+
+    # Helium Browser - with GTK theme and dark mode
+    helium = {
+      name = "Helium";
+      genericName = "Web Browser";
+      comment = "Privacy-focused Chromium browser";
+      icon = "web-browser";
+      exec = "helium --force-dark-mode --enable-features=WebUIDarkMode";
+      terminal = false;
+      categories = [ "Network" "WebBrowser" ];
+    };
   };
 
   # ─────────────────────────────────────────────────────────────────
@@ -88,10 +99,44 @@
 
   gtk = {
     enable = true;
+    theme = {
+      name = "adw-gtk3-dark";
+      package = pkgs.adw-gtk3;
+    };
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
     };
+    gtk3.extraCss = ''
+      /* Import noctalia dynamic colors */
+      @import url("file:///home/dolandstutts/.config/gtk-3.0/noctalia.css");
+
+      /* Sharp corners - no rounded edges */
+      * {
+        border-radius: 0;
+      }
+      window, dialog, popover, menu, tooltip {
+        border-radius: 0;
+      }
+      button, entry, .linked > * {
+        border-radius: 0;
+      }
+    '';
+    gtk4.extraCss = ''
+      /* Import noctalia dynamic colors */
+      @import url("file:///home/dolandstutts/.config/gtk-4.0/noctalia.css");
+
+      /* Sharp corners - no rounded edges */
+      * {
+        border-radius: 0;
+      }
+      window, dialog, popover, menu, tooltip {
+        border-radius: 0;
+      }
+      button, entry, .linked > * {
+        border-radius: 0;
+      }
+    '';
   };
 
   qt = {
@@ -106,7 +151,38 @@
 
   home.sessionVariables = {
     GTK_ICON_THEME = "Papirus-Dark";
+    GTK_THEME = "adw-gtk3-dark";
   };
+
+  # ─────────────────────────────────────────────────────────────────
+  # FASTFETCH (System Info)
+  # ─────────────────────────────────────────────────────────────────
+
+  xdg.configFile."fastfetch/config.jsonc".text = ''
+    {
+      "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+      "logo": { "type": "none" },
+      "display": { "separator": " " },
+      "modules": [
+        { "type": "custom", "format": "{#white}▄▄▄▄  ▄ ▄   ▄  ▗▄▖  ▗▄▄▖{#}" },
+        { "type": "custom", "format": "{#white}█   █ ▄  ▀▄▀  ▐▌ ▐▌▐▌{#}" },
+        { "type": "custom", "format": "{#white}█   █ █ ▄▀ ▀▄ ▐▌ ▐▌ ▝▀▚▖{#}" },
+        { "type": "custom", "format": "{#white}▄▄▄▄▄▄▄▄▄▄▄▄▄▄▞▘▄▞▘▗▄▄▞▘{#}" },
+        { "key": "╭───────────╮", "type": "custom" },
+        { "key": "│   user    │", "type": "title", "format": "{user-name}" },
+        { "key": "│   hname   │", "type": "title", "format": "{host-name}" },
+        { "key": "│   distro  │", "type": "os" },
+        { "key": "│   kernel  │", "type": "kernel" },
+        { "key": "│   uptime  │", "type": "uptime" },
+        { "key": "│   shell   │", "type": "shell" },
+        { "key": "│   pkgs    │", "type": "packages" },
+        { "key": "│   memory  │", "type": "memory" },
+        { "key": "├───────────┤", "type": "custom" },
+        { "key": "│   colors  │", "type": "colors", "symbol": "circle" },
+        { "key": "╰───────────╯", "type": "custom" }
+      ]
+    }
+  '';
 
   # ─────────────────────────────────────────────────────────────────
   # HYPRLOCK (Lock Screen) - Optimized for boot-to-lock
@@ -181,13 +257,15 @@
   # GHOSTTY (Terminal Emulator)
   # ─────────────────────────────────────────────────────────────────
 
-  xdg.configFile."ghostty/config".text = ''
+  xdg.configFile."ghostty/config" = {
+    force = true;  # Overwrite existing file without backup (fixes HM clobber errors)
+    text = ''
     # Font
     font-family = "JetBrainsMono Nerd Font"
-    font-size = 13
+    font-size = 9
 
-    # Theme - Nord (case-sensitive!)
-    theme = "Nord"
+    # Theme - managed by Noctalia (dynamic theming)
+    theme = "noctalia"
 
     # Window
     window-padding-x = 10
@@ -224,6 +302,7 @@
     # Custom: ~/.config/ghostty/shaders/  Community: ~/.config/ghostty/shaders-community/
     custom-shader = ~/.config/ghostty/shaders/cursor_blaze_nord.glsl
   '';
+  };
 
   # CRT shader for Ghostty (optional - uncomment custom-shader above to enable)
   xdg.configFile."ghostty/shaders/crt.glsl".text = ''
