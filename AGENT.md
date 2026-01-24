@@ -265,6 +265,10 @@ xdg.desktopEntries.app-to-hide = {
 3. **Lock screen delay**
    - Hyprlock uses `--immediate --no-fade-in` flags for instant display
 
+4. **Ghostty theme names are case-sensitive**
+   - Use `ghostty +list-themes` to see exact names
+   - Example: `theme = "Nord"` not `theme = "nord"`
+
 ## Development Workflow
 
 ### After Editing Configs

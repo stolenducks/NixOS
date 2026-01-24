@@ -200,11 +200,11 @@
       cat = "bat";
       grep = "rg";
       find = "fd";
-      # nh commands (better UX than raw nixos-rebuild)
-      rebuild = "nh os switch";           # Rebuild with diff preview
-      rebuild-boot = "nh os boot";        # Rebuild, apply on next boot
-      search = "nh search";               # Search packages interactively
-      clean = "nh clean all --keep 5";    # Clean old generations, keep 5
+      # nh commands with styled gum banners
+      rebuild = "gum style --border thick --border-foreground 110 --foreground 255 --bold --padding '0 2' '󱄅 NixOS Rebuild' && nh os switch";
+      rebuild-boot = "gum style --border thick --border-foreground 110 --foreground 255 --bold --padding '0 2' '󱄅 NixOS Boot' && nh os boot";
+      search = "gum style --border thick --border-foreground 110 --foreground 255 --bold --padding '0 2' ' NixOS Search' && nh search";
+      clean = "gum style --border thick --border-foreground 110 --foreground 255 --bold --padding '0 2' '󰃢 NixOS Clean' && nh clean all --keep 5";
     };
   };
 

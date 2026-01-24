@@ -164,8 +164,8 @@
     font-family = "JetBrainsMono Nerd Font"
     font-size = 13
 
-    # Theme - Nord
-    theme = "nord"
+    # Theme - Nord (case-sensitive!)
+    theme = "Nord"
 
     # Window
     window-padding-x = 10
@@ -198,8 +198,9 @@
     # Background opacity (subtle transparency)
     background-opacity = 0.95
 
-    # Shader - CRT scanline effect (subtle)
-    # custom-shader = ~/.config/ghostty/shaders/crt.glsl
+    # Shader - cursor blaze with Nord colors (cyan/blue trail)
+    # Custom: ~/.config/ghostty/shaders/  Community: ~/.config/ghostty/shaders-community/
+    custom-shader = ~/.config/ghostty/shaders/cursor_blaze_nord.glsl
   '';
 
   # CRT shader for Ghostty (optional - uncomment custom-shader above to enable)

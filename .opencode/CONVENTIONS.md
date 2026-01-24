@@ -116,3 +116,10 @@ docs: update AGENT.md with boot flow diagram
 - `with pkgs;` in large scopes (prefer explicit)
 - Deeply nested `let...in` blocks
 - Copy-pasting config between files (make a module)
+
+## Gotchas
+
+### Ghostty
+- **Theme names are case-sensitive**: Use `ghostty +list-themes` to see exact names
+- Example: `theme = "Nord"` not `theme = "nord"`
+- Config location: `~/.config/ghostty/config` (managed via `home.nix` xdg.configFile)
