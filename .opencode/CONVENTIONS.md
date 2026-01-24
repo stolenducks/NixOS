@@ -97,7 +97,7 @@ Types:
 ### Examples
 ```
 feat: add bluetooth TUI desktop entry
-fix: btop desktop entry now opens in foot terminal
+fix: btop desktop entry now opens in ghostty terminal
 refactor: extract device services to separate module
 docs: update AGENT.md with boot flow diagram
 ```
@@ -123,3 +123,31 @@ docs: update AGENT.md with boot flow diagram
 - **Theme names are case-sensitive**: Use `ghostty +list-themes` to see exact names
 - Example: `theme = "Nord"` not `theme = "nord"`
 - Config location: `~/.config/ghostty/config` (managed via `home.nix` xdg.configFile)
+
+### Noctalia-managed Files
+- `~/.config/niri/noctalia.kdl` is managed by noctalia-shell for dynamic theming
+- Do NOT add this file to Home Manager's `xdg.configFile` (causes read-only conflict)
+- Only `config.kdl` should be managed by Home Manager
+
+## Documentation Maintenance (CRITICAL)
+
+**Rule**: When changing system architecture, packages, or configuration patterns, ALWAYS update documentation in the same commit.
+
+### Files to Update
+| Change Type | Update These Files |
+|-------------|-------------------|
+| Add/remove packages | `AGENT.md` (Installed Packages section) |
+| Change terminal/editor/apps | `README.md` (System Overview table), `AGENT.md` |
+| Add new modules | `AGENT.md` (Custom Modules), `modules/README.md` |
+| Change boot flow | `AGENT.md` (Boot Flow section) |
+| New gotchas/workarounds | `CONVENTIONS.md` (Gotchas), `AGENT.md` (Known Issues) |
+| Change file management | `AGENT.md` (Key Configuration Locations) |
+
+### Verification Checklist
+Before committing system changes, verify:
+- [ ] `README.md` System Overview table is accurate
+- [ ] `AGENT.md` package lists match `configuration.nix` and `home.nix`
+- [ ] `AGENT.md` Key Configuration Locations reflects current file ownership
+- [ ] `CONVENTIONS.md` Gotchas section is up to date
+
+**Stale documentation is worse than no documentation.**

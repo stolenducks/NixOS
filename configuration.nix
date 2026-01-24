@@ -255,9 +255,9 @@
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode
     nh  # Better nixos-rebuild UX with diff, search, clean
     zed-editor
-    superfile
+    yazi
     ghostty
-    ripgrep fd eza bat fzf gum zoxide starship tldr jq tree superfile nixd ventoy-full
+    ripgrep fd eza bat fzf gum zoxide starship tldr jq tree nixd ventoy-full
     fishPlugins.fzf-fish
     fishPlugins.done
     fishPlugins.autopair
@@ -287,32 +287,6 @@
     noto-fonts
     noto-fonts-color-emoji
   ];
-
-  # ─────────────────────────────────────────────────────────────────
-  # CUSTOM DESKTOP ENTRIES
-  # ─────────────────────────────────────────────────────────────────
-
-  environment.etc."xdg/applications/superfile.desktop".text = ''
-    [Desktop Entry]
-    Name=Superfile
-    Comment=Modern terminal file manager
-    Exec=ghostty -e superfile
-    Icon=system-file-manager
-    Terminal=false
-    Type=Application
-    Categories=System;FileTools;FileManager;
-  '';
-
-  environment.etc."xdg/applications/opencode.desktop".text = ''
-    [Desktop Entry]
-    Name=OpenCode
-    Comment=AI coding agent
-    Exec=ghostty -e opencode
-    Icon=code
-    Terminal=false
-    Type=Application
-    Categories=Development;IDE;
-  '';
 
   # ─────────────────────────────────────────────────────────────────
   # XDG PORTAL

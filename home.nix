@@ -58,6 +58,28 @@
       terminal = false;
       categories = [ "System" "Utility" ];
     };
+
+    # Yazi - Terminal file manager
+    yazi = {
+      name = "Yazi";
+      genericName = "File Manager";
+      comment = "Blazing fast terminal file manager";
+      icon = "system-file-manager";
+      exec = "${pkgs.ghostty}/bin/ghostty -e yazi";
+      terminal = false;
+      categories = [ "System" "FileTools" "FileManager" ];
+    };
+
+    # OpenCode - AI coding agent
+    opencode = {
+      name = "OpenCode";
+      genericName = "AI Coding Agent";
+      comment = "AI-powered coding assistant";
+      icon = "code";
+      exec = "${pkgs.ghostty}/bin/ghostty -e opencode";
+      terminal = false;
+      categories = [ "Development" "IDE" ];
+    };
   };
 
   # ─────────────────────────────────────────────────────────────────
@@ -497,43 +519,8 @@
     include "./noctalia.kdl"
   '';
 
-  xdg.configFile."niri/noctalia.kdl".text = ''
-    layout {
-
-        focus-ring {
-            active-color   "#8fbcbb"
-            inactive-color "#2e3440"
-            urgent-color   "#bf616a"
-        }
-
-        border {
-            active-color   "#8fbcbb"
-            inactive-color "#2e3440"
-            urgent-color   "#bf616a"
-        }
-
-        shadow {
-            color "#2e344070"
-        }
-
-        tab-indicator {
-            active-color   "#8fbcbb"
-            inactive-color "#2e6b69"
-            urgent-color   "#bf616a"
-        }
-
-        insert-hint {
-            color "#8fbcbb80"
-        }
-    }
-
-    recent-windows {
-        highlight {
-            active-color "#8fbcbb"
-            urgent-color "#bf616a"
-        }
-    }
-  '';
+  # Note: noctalia.kdl is managed by noctalia-shell itself (dynamic theming)
+  # Only config.kdl is managed by Home Manager - it includes noctalia.kdl
 
   # ─────────────────────────────────────────────────────────────────
   # USER SERVICES

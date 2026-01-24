@@ -144,7 +144,7 @@ in {
 | `~/.config/ghostty/shaders/` | Ghostty shader effects | `home.nix` (xdg.configFile) |
 | `~/.config/niri/config.kdl` | Niri compositor config | `home.nix` (xdg.configFile) |
 | `~/.config/hypr/hyprlock.conf` | Lock screen config | `home.nix` (xdg.configFile) |
-| `~/.config/niri/noctalia.kdl` | Noctalia theme colors | `home.nix` (xdg.configFile) |
+| `~/.config/niri/noctalia.kdl` | Noctalia theme colors | Managed by noctalia-shell (dynamic theming) |
 
 ## Package Installation Patterns
 
@@ -235,7 +235,7 @@ xdg.desktopEntries.app-to-hide = {
 
 **Desktop**: noctalia-shell, ghostty, zed-editor, firefox, nautilus, obsidian
 **CLI Tools**: ripgrep, fd, eza, bat, fzf, gum, zoxide, starship, tldr, jq, tree, btop, fastfetch, ncdu
-**TUI Apps**: superfile (file manager), bluetui (bluetooth), caligula (disk imager)
+**TUI Apps**: yazi (file manager), bluetui (bluetooth), caligula (disk imager)
 **System**: nh, nixd, hyprlock, wl-clipboard, cliphist, grim, slurp
 **Fonts**: JetBrainsMono Nerd Font, Fira Code Nerd Font, Noto (+ emoji)
 
@@ -268,6 +268,21 @@ xdg.desktopEntries.app-to-hide = {
 4. **Ghostty theme names are case-sensitive**
    - Use `ghostty +list-themes` to see exact names
    - Example: `theme = "Nord"` not `theme = "nord"`
+
+5. **Home Manager file conflicts**
+   - `backupFileExtension = "backup"` is set in flake.nix (standard practice)
+   - If rebuild fails with "would be clobbered", delete the `.backup` file blocking it
+   - After initial migration, symlinks don't create backups
+
+6. **Desktop entries for TUI apps**
+   - Use `xdg.desktopEntries` in `home.nix` (not `environment.etc` in configuration.nix)
+   - Noctalia scans `/etc/profiles/per-user/*/share/applications/`, not `/etc/xdg/applications/`
+   - Use full path: `exec = "${pkgs.ghostty}/bin/ghostty -e appname";`
+
+7. **Noctalia-managed files**
+   - `~/.config/niri/noctalia.kdl` is managed by noctalia-shell for dynamic theming
+   - Do NOT add to Home Manager's `xdg.configFile` (causes read-only conflict)
+   - Only `config.kdl` should be in Home Manager
 
 ## Development Workflow
 
@@ -327,7 +342,19 @@ sudo nixos-rebuild switch --rollback
 1. Determine if it's system-level (configuration.nix) or user-level (home.nix)
 2. For reusable functionality, create a module in `modules/`
 3. For new flake inputs, add to `flake.nix` inputs and outputs
-4. Document significant changes in this AGENT.md
+4. **Update documentation** (see below)
+
+### Documentation Maintenance (MANDATORY)
+
+**When you change the system, update the docs in the same commit.**
+
+| Change | Update |
+|--------|--------|
+| Add/remove packages | This file → "Installed System Packages" |
+| Change terminal/editor/core apps | `README.md` table, this file |
+| Add modules | This file → "Custom Modules", `modules/README.md` |
+| New workarounds | This file → "Known Issues", `CONVENTIONS.md` → "Gotchas" |
+| Change config file ownership | This file → "Key Configuration Locations" |
 
 ### Nix Language Notes
 

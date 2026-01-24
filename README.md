@@ -18,7 +18,7 @@ sudo nixos-rebuild switch --flake ~/NixOS
 |-----------|--------|
 | Desktop | Niri (scrollable tiling Wayland) |
 | Shell | Noctalia (app launcher, panels) |
-| Terminal | Foot |
+| Terminal | Ghostty |
 | Editor | Zed |
 | Theme | Nord colors, Papirus-Dark icons |
 
