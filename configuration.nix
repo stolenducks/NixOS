@@ -60,7 +60,7 @@
       "udev.log_level=0"
       "rd.udev.log_level=0"
       "vt.global_cursor_default=0"  # Hide cursor
-      "systemd.show_status=false"   # Hide systemd status completely
+      "systemd.show_status=auto"    # Let Plymouth control status display
       "rd.systemd.show_status=false"
       "fbcon=nodefer"               # Prevent early framebuffer console
       "vt.handoff=7"                # Seamless Plymouth → compositor handoff
