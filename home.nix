@@ -94,6 +94,104 @@
   };
 
   # ─────────────────────────────────────────────────────────────────
+  # GIT + GITHUB CLI
+  # ─────────────────────────────────────────────────────────────────
+
+  programs.git = {
+    enable = true;
+    settings = {
+      user = {
+        name = "stolenducks";
+        email = "stolenducks@pm.me";
+      };
+      init.defaultBranch = "main";
+      push.autoSetupRemote = true;   # Auto-track upstream on first push
+      pull.rebase = true;            # Rebase instead of merge on pull
+    };
+  };
+
+  programs.gh = {
+    enable = true;
+    settings = {
+      git_protocol = "ssh";          # Use SSH for security
+      prompt = "enabled";            # Interactive prompts
+      editor = "zed";                # Use Zed as editor
+      aliases = {
+        co = "pr checkout";          # gh co <pr-number>
+        pv = "pr view";              # gh pv
+        pc = "pr create";            # gh pc
+        rc = "repo create";          # gh rc (for new projects)
+        rv = "repo view --web";      # gh rv (open repo in browser)
+        cl = "repo clone";           # gh cl <repo>
+      };
+    };
+    gitCredentialHelper.enable = true;  # Auto git auth via gh
+  };
+
+  # ─────────────────────────────────────────────────────────────────
+  # YAZI (Terminal File Manager)
+  # ─────────────────────────────────────────────────────────────────
+
+  programs.yazi = {
+    enable = true;
+    enableFishIntegration = true;
+    settings = {
+      mgr = {
+        show_hidden = true;
+        ratio = [0 3 7];  # 2 columns: 30% current, 70% preview
+      };
+      preview = {
+        max_width = 4000;   # Large limit so images can scale with window
+        max_height = 4000;  # Large limit so images can scale with window
+      };
+      opener = {
+        edit = [
+          { run = ''zeditor "$@"''; block = true; desc = "Zed"; for = "unix"; }
+        ];
+      };
+    };
+    # Theme: Reference Noctalia flavor + custom overrides
+    # Flavor provides base colors, our overrides add sharp styling
+    theme = {
+      # Reference the Noctalia flavor (provides base colors)
+      flavor = {
+        dark = "noctalia";
+        light = "noctalia";
+      };
+      # Status bar - sharp angular separators (not rounded)
+      status = {
+        sep_left = { open = ""; close = ""; };   # Sharp triangles
+        sep_right = { open = ""; close = ""; };  # Sharp triangles
+      };
+      # Tabs - sharp separators
+      tabs = {
+        sep_inner = { open = ""; close = ""; };  # Sharp angled
+      };
+      # Indicator - sharp rectangular selection (not rounded pill)
+      indicator = {
+        padding = { open = ""; close = ""; };  # Empty = sharp, no extra padding
+      };
+      # Manager - solid hover highlighting
+      mgr = {
+        hovered = { fg = "#2e3440"; bg = "#8fbcbb"; bold = true; };
+        preview_hovered = { underline = true; };
+      };
+      # Input - solid selection
+      input = {
+        selected = { fg = "#2e3440"; bg = "#88c0d0"; };
+      };
+      # Help menu
+      help = {
+        hovered = { fg = "#2e3440"; bg = "#8fbcbb"; bold = true; };
+      };
+      # Tasks
+      tasks = {
+        hovered = { fg = "#2e3440"; bg = "#8fbcbb"; bold = true; };
+      };
+    };
+  };
+
+  # ─────────────────────────────────────────────────────────────────
   # GTK / QT THEMING
   # ─────────────────────────────────────────────────────────────────
 
@@ -152,6 +250,8 @@
   home.sessionVariables = {
     GTK_ICON_THEME = "Papirus-Dark";
     GTK_THEME = "adw-gtk3-dark";
+    EDITOR = "zeditor";
+    VISUAL = "zeditor";
   };
 
   # ─────────────────────────────────────────────────────────────────

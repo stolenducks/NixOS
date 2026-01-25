@@ -262,7 +262,7 @@
     fishPlugins.fzf-fish
     fishPlugins.done
     fishPlugins.autopair
-    btop fastfetch ncdu
+    btop fastfetch ncdu feh
     caligula      # TUI disk imager
     bluetui       # TUI bluetooth manager
     wget curl unzip p7zip trash-cli
