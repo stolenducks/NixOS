@@ -263,6 +263,7 @@
     fishPlugins.done
     fishPlugins.autopair
     btop fastfetch ncdu feh
+    fastmail-desktop  # Fastmail email client
     caligula      # TUI disk imager
     bluetui       # TUI bluetooth manager
     wget curl unzip p7zip trash-cli

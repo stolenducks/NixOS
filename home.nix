@@ -91,6 +91,25 @@
       terminal = false;
       categories = [ "Network" "WebBrowser" ];
     };
+
+    # Mail - Fastmail desktop client
+    mail = {
+      name = "Mail";
+      genericName = "By Fastmail";
+      comment = "Fastmail email client";
+      icon = "fastmail";
+      exec = "fastmail";
+      terminal = false;
+      categories = [ "Network" "Email" ];
+    };
+
+    # Hide default Fastmail entry (we use our custom "Mail" entry above)
+    fastmail = {
+      name = "Fastmail";
+      exec = "true";
+      noDisplay = true;
+      settings.Hidden = "true";
+    };
   };
 
   # ─────────────────────────────────────────────────────────────────
@@ -540,6 +559,11 @@
     window-rule {
         match app-id=r#"firefox$"# title="^Picture-in-Picture$"
         open-floating true
+    }
+
+    window-rule {
+        match app-id="Fastmail"
+        open-maximized true
     }
 
     window-rule {
