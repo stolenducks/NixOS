@@ -1,7 +1,6 @@
 { config, pkgs, lib, ... }:
 
 # Home Manager Configuration
-# Following Tony Banters methodology: https://github.com/tonybanters/nixos-from-scratch
 #
 # This file manages user-level configuration:
 # - Desktop entries (xdg.desktopEntries)
@@ -20,7 +19,7 @@
   xdg.desktopEntries = {
     # Fix btop++ launcher - explicitly runs in ghostty terminal
     btop = {
-      name = "btop++";
+      name = "Monitor";
       genericName = "System Monitor";
       comment = "Resource monitor with graphs for CPU, memory, disks, network";
       icon = "utilities-system-monitor";
@@ -40,15 +39,7 @@
       categories = [ "Settings" "HardwareSettings" ];
     };
 
-    # Hide Bluetui entry (replaced by bluetooth entry)
-    bluetui = {
-      name = "Bluetui";
-      exec = "true";
-      noDisplay = true;
-      settings.Hidden = "true";
-    };
-
-    # Burn ISO - guided flow then Caligula
+    # Burn ISO guided flow then Caligula
     burn-iso = {
       name = "Burn ISO";
       genericName = "Disk Imager";
@@ -92,8 +83,9 @@
       categories = [ "Network" "WebBrowser" ];
     };
 
-    # Mail - Fastmail desktop client
-    mail = {
+    # Override fastmail.desktop from package - rename to "Mail"
+    # Key must match the package's .desktop filename to override it
+    fastmail = {
       name = "Mail";
       genericName = "By Fastmail";
       comment = "Fastmail email client";
@@ -103,10 +95,10 @@
       categories = [ "Network" "Email" ];
     };
 
-    # Hide default Fastmail entry (we use our custom "Mail" entry above)
-    fastmail = {
-      name = "Fastmail";
-      exec = "true";
+    # Override bluetui.desktop from package - hide it (we use "bluetooth" entry above)
+    bluetui = {
+      name = "Bluetui";
+      exec = "bluetui";
       noDisplay = true;
       settings.Hidden = "true";
     };
@@ -170,7 +162,6 @@
       };
     };
     # Theme: Reference Noctalia flavor + custom overrides
-    # Flavor provides base colors, our overrides add sharp styling
     theme = {
       # Reference the Noctalia flavor (provides base colors)
       flavor = {
@@ -179,16 +170,16 @@
       };
       # Status bar - sharp angular separators (not rounded)
       status = {
-        sep_left = { open = ""; close = ""; };   # Sharp triangles
-        sep_right = { open = ""; close = ""; };  # Sharp triangles
+        sep_left = { open = ""; close = ""; };
+        sep_right = { open = ""; close = ""; };
       };
       # Tabs - sharp separators
       tabs = {
-        sep_inner = { open = ""; close = ""; };  # Sharp angled
+        sep_inner = { open = ""; close = ""; };
       };
       # Indicator - sharp rectangular selection (not rounded pill)
       indicator = {
-        padding = { open = ""; close = ""; };  # Empty = sharp, no extra padding
+        padding = { open = ""; close = ""; };
       };
       # Manager - solid hover highlighting
       mgr = {
