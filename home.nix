@@ -397,6 +397,9 @@
     copy-on-select = true
     clipboard-paste-protection = false
 
+    # Disable quit confirmation dialog
+    confirm-close-surface = false
+
     # Keybindings
     keybind = ctrl+shift+c=copy_to_clipboard
     keybind = ctrl+shift+v=paste_from_clipboard
@@ -571,7 +574,10 @@
         Mod+Return { spawn "ghostty"; }
         Mod+Space { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
         Mod+D { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
-        Mod+E { spawn "zeditor"; }
+        Mod+B { spawn "helium" "--force-dark-mode" "--enable-features=WebUIDarkMode"; }
+        Mod+E { spawn "ghostty" "-e" "yazi"; }
+        Mod+Shift+Z { spawn "zeditor"; }
+        Mod+Shift+E { spawn "nautilus"; }
 
         // ── Noctalia Panels ─────────────────────────────────────────
         Mod+Escape { spawn "noctalia-shell" "ipc" "call" "sessionMenu" "toggle"; }
@@ -705,7 +711,7 @@
         XF86MonBrightnessDown allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "brightness" "decrease"; }
 
         // ── Session ─────────────────────────────────────────────────
-        Mod+Shift+E { quit; }
+        Mod+Shift+Q { quit; }
         Mod+Shift+P { power-off-monitors; }
         Mod+O { toggle-overview; }
     }
