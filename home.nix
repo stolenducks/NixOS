@@ -77,7 +77,7 @@
       name = "Helium";
       genericName = "Web Browser";
       comment = "Privacy-focused Chromium browser";
-      icon = "web-browser";
+      icon = "helium";
       exec = "helium --force-dark-mode --enable-features=WebUIDarkMode";
       terminal = false;
       categories = [ "Network" "WebBrowser" ];
