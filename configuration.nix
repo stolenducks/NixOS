@@ -258,7 +258,7 @@
     zed-editor
     yazi
     ghostty
-    ripgrep fd eza bat fzf gum zoxide starship tldr jq tree nixd ventoy-full
+    ripgrep fd eza bat fzf gum zoxide starship tldr jq tree nixd
     fishPlugins.fzf-fish
     fishPlugins.done
     fishPlugins.autopair
@@ -275,9 +275,7 @@
     nerd-fonts.fira-code
   ];
 
-  nixpkgs.config.permittedInsecurePackages = [
-    "ventoy-1.1.10"
-  ];
+
 
   # ─────────────────────────────────────────────────────────────────
   # FONTS
