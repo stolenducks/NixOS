@@ -731,6 +731,20 @@
   # a systemd service that waits for Noctalia wallpaper state.
 
   # ─────────────────────────────────────────────────────────────────
+  # ACTIVATION SCRIPTS
+  # ─────────────────────────────────────────────────────────────────
+
+  # Fix Helium webapp .desktop file permissions
+  # Helium creates webapps with 600 permissions, but Noctalia needs read access (644)
+  home.activation.fixWebappPermissions = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    if [ -d "$HOME/.local/share/applications" ]; then
+      for f in "$HOME"/.local/share/applications/chrome-*.desktop; do
+        [ -f "$f" ] && chmod 644 "$f" 2>/dev/null || true
+      done
+    fi
+  '';
+
+  # ─────────────────────────────────────────────────────────────────
   # USER PACKAGES
   # ─────────────────────────────────────────────────────────────────
 

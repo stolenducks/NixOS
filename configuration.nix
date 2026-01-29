@@ -14,6 +14,8 @@
     ./modules/file-manager.nix
     ./modules/system-tools.nix
     ./modules/device-services.nix
+    ./modules/office.nix
+    ./modules/syncthing.nix
   ];
 
   # ─────────────────────────────────────────────────────────────────
@@ -170,6 +172,13 @@
   # Device Services (udisks2, GVfs, polkit for automount)
   modules.device-services.enable = true;
   modules.device-services.automountWithoutPassword = true;
+
+  # Office Applications (OnlyOffice)
+  modules.office.enable = true;
+
+  # Syncthing (File Synchronization)
+  # Web UI: http://localhost:8384
+  modules.syncthing.enable = true;
 
   # ─────────────────────────────────────────────────────────────────
   # USER
