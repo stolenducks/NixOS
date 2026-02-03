@@ -161,7 +161,6 @@
         ];
       };
     };
-    # Theme: Reference Noctalia flavor + custom overrides
     theme = {
       # Reference the Noctalia flavor (provides base colors)
       flavor = {
@@ -201,6 +200,9 @@
     };
   };
 
+  # Yazi theme.toml - force to avoid conflicts with something recreating it
+  xdg.configFile."yazi/theme.toml".force = true;
+
   # ─────────────────────────────────────────────────────────────────
   # GTK / QT THEMING
   # ─────────────────────────────────────────────────────────────────
@@ -215,7 +217,13 @@
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
     };
-    gtk3.extraCss = ''
+  };
+
+  # GTK CSS files - use xdg.configFile with force=true to avoid conflicts
+  # Something recreates these files at runtime, causing Home Manager boot failures
+  xdg.configFile."gtk-3.0/gtk.css" = {
+    force = true;
+    text = ''
       /* Import noctalia dynamic colors */
       @import url("file:///home/dolandstutts/.config/gtk-3.0/noctalia.css");
 
@@ -230,7 +238,11 @@
         border-radius: 0;
       }
     '';
-    gtk4.extraCss = ''
+  };
+
+  xdg.configFile."gtk-4.0/gtk.css" = {
+    force = true;
+    text = ''
       /* Import noctalia dynamic colors */
       @import url("file:///home/dolandstutts/.config/gtk-4.0/noctalia.css");
 
@@ -560,6 +572,7 @@
         open-maximized true
     }
 
+    // Catch-all: sharp corners for all windows
     window-rule {
         geometry-corner-radius 0
         clip-to-geometry true
@@ -734,15 +747,63 @@
   # ACTIVATION SCRIPTS
   # ─────────────────────────────────────────────────────────────────
 
-  # Fix Helium webapp .desktop file permissions
-  # Helium creates webapps with 600 permissions, but Noctalia needs read access (644)
-  home.activation.fixWebappPermissions = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  # Fix Helium webapp .desktop files
+  # Helium creates webapps with:
+  # 1. Wrong permissions (600 instead of 644) - prevents Noctalia from reading them
+  # 2. Wrong Exec path (AppRun from nix store instead of /run/current-system/sw/bin/helium)
+  home.activation.fixWebappDesktopFiles = lib.hm.dag.entryAfter ["writeBoundary"] ''
     if [ -d "$HOME/.local/share/applications" ]; then
       for f in "$HOME"/.local/share/applications/chrome-*.desktop; do
-        [ -f "$f" ] && chmod 644 "$f" 2>/dev/null || true
+        if [ -f "$f" ]; then
+          # Fix permissions (make readable by launcher)
+          chmod 644 "$f" 2>/dev/null || true
+          
+          # Fix Exec path (replace AppRun path with system helium)
+          if grep -q '/nix/store/.*helium.*extracted/AppRun' "$f" 2>/dev/null; then
+            sed -i 's|/nix/store/[^/]*helium[^/]*extracted/AppRun|/run/current-system/sw/bin/helium|g' "$f" 2>/dev/null || true
+          fi
+        fi
       done
     fi
   '';
+
+  # ─────────────────────────────────────────────────────────────────
+  # SYSTEMD USER SERVICES
+  # ─────────────────────────────────────────────────────────────────
+
+  # Watch for new Helium webapp .desktop files and auto-fix them
+  systemd.user.services.fix-webapps = {
+    Unit = {
+      Description = "Fix Helium webapp .desktop files (permissions + Exec path)";
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = pkgs.writeShellScript "fix-webapps" ''
+        for f in "$HOME"/.local/share/applications/chrome-*.desktop; do
+          if [ -f "$f" ]; then
+            chmod 644 "$f" 2>/dev/null || true
+            if grep -q '/nix/store/.*helium.*extracted/AppRun' "$f" 2>/dev/null; then
+              sed -i 's|/nix/store/[^/]*helium[^/]*extracted/AppRun|/run/current-system/sw/bin/helium|g' "$f" 2>/dev/null || true
+            fi
+          fi
+        done
+      '';
+    };
+  };
+
+  # Path watcher - triggers fix-webapps when .desktop files change
+  systemd.user.paths.fix-webapps = {
+    Unit = {
+      Description = "Watch for new Helium webapp .desktop files";
+    };
+    Path = {
+      PathChanged = "%h/.local/share/applications";
+      Unit = "fix-webapps.service";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
 
   # ─────────────────────────────────────────────────────────────────
   # USER PACKAGES
